@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  name String
+  password String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  tiket_service TiketService[] @relation("user")
+
+  @@map("users")
+}
+
+model Tiket {
+  id String @id @default(uuid())
+  tiket String
+  listen Boolean @default(true)
+  created_at DateTime @default(now())
+  initial_at DateTime
+  final_at  DateTime
+
+  tiket_service TiketService[] @relation("tiket")
+
+  @@map("tikets")
+}
+
+model TiketService {
+  user User @relation("user", fields: [userId], references: [id])
+  userId String
+  tiket Tiket @relation("tiket", fields: [tiketId], references: [id])
+  tiketId String
+
+  @@id([userId, tiketId])
+
+  @@map("tiket_service")
+}
